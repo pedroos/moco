@@ -1,0 +1,6 @@
+bin/
+.cproject
+*.out
+.project
+.settings/
+.vscode/
