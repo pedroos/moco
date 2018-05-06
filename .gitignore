@@ -3,3 +3,7 @@ prod/
 .project
 .externalToolBuilders/
 .settings
+*.code-workspace
+GPATH
+GRTAGS
+GTAGS

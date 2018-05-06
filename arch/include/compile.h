@@ -6,8 +6,8 @@
 
 int compile_file(FILE *in, uint16_t **out);
 
-extern const int DECODE_RESULT_OK;
-extern const int DECODE_RESULT_FILE_ERROR;
-extern const int DECODE_RESULT_SYNTAX_ERROR;
+extern const int COMPILE_RESULT_OK;
+extern const int COMPILE_RESULT_FILE_ERROR;
+extern const int COMPILE_RESULT_SYNTAX_ERROR;
 
 #endif /* COMPILE_H */
