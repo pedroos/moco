@@ -3,27 +3,27 @@
 #include <string.h>
 #include <stdint.h>
 #include <signal.h>
-#include "parse.h"
+#include "compile.h"
 #include "instruction.h"
 #include "util.h"
 
-const int DECODE_RESULT_OK = 0;
-const int DECODE_RESULT_FILE_ERROR = 1;
-const int DECODE_RESULT_SYNTAX_ERROR = 2;
+const int COMPILE_RESULT_OK = 0;
+const int COMPILE_RESULT_FILE_ERROR = 1;
+const int COMPILE_RESULT_SYNTAX_ERROR = 2;
 
 const int BUFFER_SIZE = 1000;
 
-int decode_file(char *fileName, uint16_t **text)
+int compile_file(FILE *in, uint16_t **out)
 {
-    FILE *file = fopen(fileName, "r");
-    if (file == NULL)
-        return DECODE_RESULT_FILE_ERROR;
-    fseek(file, 0, SEEK_END);
-    fseek(file, 0, SEEK_SET);
+    //TODO: I need a stream here. fmemopen()
+    if (in == NULL)
+        return COMPILE_RESULT_FILE_ERROR;
+    fseek(in, 0, SEEK_END);
+    fseek(in, 0, SEEK_SET);
 
-    *text = malloc(M_INSTRUCTION_SIZE * BUFFER_SIZE);
-    if (!text) {}
-    uint16_t *text_i = *text;
+    *out = malloc(M_INSTRUCTION_SIZE * BUFFER_SIZE);
+    if (!out) {}
+    uint16_t *out_i = *out;
 
     char *term = malloc(M_INSTRUCTION_SIZE);
     char *term_i = term;
@@ -35,9 +35,9 @@ int decode_file(char *fileName, uint16_t **text)
     int wasspc = 0;
     int paramcount = 0;
     int blank = 1;
-    while ((c = fgetc(file)) != EOF) {
+    while ((c = fgetc(in)) != EOF) {
         if (oper == &OPER_NONE && c == '#') {
-            while ((c = fgetc(file)) != '\n' && c != EOF);
+            while ((c = fgetc(in)) != '\n' && c != EOF);
         }
         if (c == ' ' && wasspc)
             continue;
@@ -85,10 +85,10 @@ int decode_file(char *fileName, uint16_t **text)
             ++paramcount;
             if (paramcount >= oper->params) {
                 // End of instruction.
-                *text_i = instr;
+                *out_i = instr;
                 instr = UINT16_MAX;
-                text_i++;
-                if (text_i - *text > BUFFER_SIZE) {
+                out_i++;
+                if (out_i - *out > BUFFER_SIZE) {
                     // Buffer filled. For now end.
                     break;
                 }
@@ -105,10 +105,10 @@ int decode_file(char *fileName, uint16_t **text)
         }
     }
     free(term);
-    return DECODE_RESULT_OK;
+    return COMPILE_RESULT_OK;
     
     syntax_error:
-    free(*text);
+    free(*out);
     free(term);
-    return DECODE_RESULT_SYNTAX_ERROR;
+    return COMPILE_RESULT_SYNTAX_ERROR;
 }

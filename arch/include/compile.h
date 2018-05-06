@@ -1,6 +1,7 @@
-#ifndef PARSE_H
-#define PARSE_H
+#ifndef COMPILE_H
+#define COMPILE_H
 
+#include <stdio.h>
 #include <stdint.h>
 
 // TODO: Make it a function
@@ -18,10 +19,10 @@
                 instr |= id16; \
 } while (0);
 
-int decode_file(char *fileName, uint16_t **text);
+int compile_file(FILE *in, uint16_t **out);
 
 extern const int DECODE_RESULT_OK;
 extern const int DECODE_RESULT_FILE_ERROR;
 extern const int DECODE_RESULT_SYNTAX_ERROR;
 
-#endif /* PARSE_H */
+#endif /* COMPILE_H */
