@@ -80,7 +80,17 @@ int compile_file(FILE *in, uint16_t **out)
                      oper == &OPER_LOAD || oper == &OPER_SAVE || oper == &OPER_ADD || 
                      oper == &OPER_MULT) 
             {
-                BIN_REGISTER_ID(*term, oper->params - paramcount);
+                for (int i = 0; i < sizeof(ALL_REGISTRS) / sizeof(ALL_REGISTRS[0]); i++) {
+                    if (ALL_REGISTRS[i]->ab == *term) {
+                        reg_find = ALL_REGISTRS[i];
+                        break;
+                    }
+                }
+                if (reg_find == &REGISTER_NONE)
+                    goto syntax_error;
+                uint16_t id16 = (uint16_t)reg_find->id;
+                id16 <<= M_OPCODE_SIZE * (oper->params - paramcount);
+                instr |= id16;
             }
             ++paramcount;
             if (paramcount >= oper->params) {
